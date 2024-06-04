@@ -1,7 +1,9 @@
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 // import OAuth from '../components/OAuth';
+
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -16,6 +18,11 @@ export default function SignUp() {
     if (!formData.username || !formData.email || !formData.password || !formData.cpassword) {
       return setErrorMessage('Please fill out all fields.');
     }
+    if (formData.password !== formData.cpassword) {
+      setErrorMessage('Passwords do not match.');
+      toast.error('Passwords do not match.')
+      return ;
+    }
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -26,15 +33,21 @@ export default function SignUp() {
       });
       const data = await res.json();
       // console.log(data,"<<====data")
-      if (data.success === false) {
-        return setErrorMessage(data.message);
-      }
       setLoading(false);
-      if (data.status ==='success') {
-        navigate('/sign-in');
+      // toast.error(data.message);
+
+      if (data.status === 'error') {
+        // console.log(data.message ,"<<ness")
+        setErrorMessage(data.message);
+        toast.error(data.message)
+      }
+      if (data.status === 'success') {
+        toast.success(data.message);
+        navigate('/signin');
       }
     } catch (error) {
       setErrorMessage(error.message);
+      toast.error(error.message);
       setLoading(false);
     }
   };
@@ -49,6 +62,7 @@ export default function SignUp() {
             </span>
             Blog
           </Link>
+
           <p className='text-sm mt-5'>
             This is a demo project. You can sign up with your email and password
             or with Google.
@@ -112,7 +126,7 @@ export default function SignUp() {
           </form>
           <div className='flex gap-2 text-sm mt-5'>
             <span>Have an account?</span>
-            <Link to='/sign-in' className='text-blue-500'>
+            <Link to='/signin' className='text-blue-500'>
               Sign In
             </Link>
           </div>

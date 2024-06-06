@@ -1,4 +1,4 @@
-import {BrowserRouter , Route ,Routes} from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Home from './pages/Home'
 import Projects from './pages/Projects'
@@ -8,21 +8,25 @@ import SignUp from './pages/SignUp'
 import About from './pages/About'
 import Header from './Components/Header'
 import FooterComp from './Components/Footer'
+import PrivateRoutes from './Components/PrivateRoutes'
+PrivateRoutes
 
 const App = () => {
   return (
 
     <BrowserRouter>
-          <Header/>
-    <Routes>
-      <Route  path="/"  element ={<Home/>} />
-      <Route  path="/about"  element ={<About/>} />
-      <Route  path="/dashboard"  element ={<Dashboard/>} />
-      <Route  path="/projects"  element ={<Projects/>} />
-      <Route  path="/signin"  element ={<Signin/>} />
-      <Route  path="/signup"  element ={<SignUp/>} />
-    </Routes>
-        <FooterComp/>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+        <Route path="/projects" element={<Projects />} />
+      </Routes>
+      <FooterComp />
     </BrowserRouter>
   )
 }

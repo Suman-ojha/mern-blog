@@ -2,26 +2,34 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// import OAuth from '../components/OAuth';
+import { signInStart,signInSuccess,signInFailure } from '../redux/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import Oauth from '../Components/Oauth';
+
+
 
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState(null)
+  const {loading , error : errorMessage} = useSelector(state => state.user );
+  // const [loading, setLoading] = useState(fal se);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if ( !formData.email || !formData.password ) {
-      return setErrorMessage('Please fill out all fields.');
+      return dispatch(signInFailure('Please fill out all fields.'));
     }
     
     try {
-      setLoading(true);
-      setErrorMessage(null);
+      //use redux
+      dispatch(signInStart);
+      // setLoading(true);
+      // setErrorMessage(null);
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,21 +37,24 @@ export default function Signin() {
       });
       const data = await res.json();
 
-      setLoading(false);
+      // setLoading(false);
 
       if (data.status === 'error') {
         // console.log(data.message ,"<<ness")
-        setErrorMessage(data.message);
+        // setErrorMessage(data.message);
+        dispatch(signInFailure(data.message))
         toast.error(data.message)
       }
       if (data.status === 'success') {
         toast.success(data.message);
+        dispatch(signInSuccess(data))
         navigate('/');
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      dispatch(signInFailure(error.message))
+      // setErrorMessage(error.message);
       toast.error(error.message);
-      setLoading(false);
+      // setLoading(false);
     }
   };
   return (
@@ -97,10 +108,10 @@ export default function Signin() {
                   <span className='pl-3'>Loading...</span>
                 </>
               ) : (
-                'Sign Up'
+                'Sign In'
               )}
             </Button>
-            {/* <OAuth /> */}
+            <Oauth />
           </form>
           <div className='flex gap-2 text-sm mt-5'>
             <span>Don't have an account?</span>

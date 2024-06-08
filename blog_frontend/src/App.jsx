@@ -9,7 +9,7 @@ import About from './pages/About'
 import Header from './Components/Header'
 import FooterComp from './Components/Footer'
 import PrivateRoutes from './Components/PrivateRoutes'
-PrivateRoutes
+
 
 const App = () => {
   return (

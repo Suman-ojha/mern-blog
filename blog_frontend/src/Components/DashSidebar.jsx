@@ -1,0 +1,60 @@
+import React from 'react'
+import { Sidebar } from 'flowbite-react';
+import {
+    HiUser,
+    HiArrowSmRight,
+    HiDocumentText,
+    HiOutlineUserGroup,
+    HiAnnotation,
+    HiChartPie,
+} from 'react-icons/hi';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { signoutSuccess } from '../redux/user/userSlice';
+
+
+
+
+const DashSidebar = () => {
+    const location = useLocation();
+    const [tab, setTab] = useState('')
+    const navigate = useNavigate()
+    const { currentUser } = useSelector(state => state.user)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const tabFromUrl = urlParams.get('tab');
+        if (tabFromUrl) {
+            setTab(tabFromUrl)
+        }
+
+    }, [location.search])
+
+    const handleSignout = async () => {
+        dispatch(signoutSuccess())
+        // Clear the persisted state from localStorage
+        localStorage.removeItem('persist:root');
+        toast.success('You have successfully signed out.');
+        navigate('/signin')
+    }
+    return (
+        <Sidebar className='w-full'>
+            <Sidebar.Items>
+                <Sidebar.ItemGroup>
+                    <Link to='/dashboard?tab=profile'>
+                        <Sidebar.Item active={tab === 'profile'} label={"User"} icon={HiUser} labelColor='dark' as='div'>
+                            Profile
+                        </Sidebar.Item>
+                    </Link>
+                    <Sidebar.Item icon={HiArrowSmRight} className='cursor-pointer' onClick={handleSignout}>
+                        Sign Out
+                    </Sidebar.Item>
+                </Sidebar.ItemGroup>
+            </Sidebar.Items>
+        </Sidebar>
+    )
+}
+
+export default DashSidebar

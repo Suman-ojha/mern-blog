@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-
+const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
     { timestamps: true }
 );
 
+userSchema.plugin(aggregatePaginate);
 const User = mongoose.model('user', userSchema);
 
 module.exports = User;

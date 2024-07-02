@@ -7,8 +7,15 @@ import {
     ref,
     uploadBytesResumable,
 } from 'firebase/storage';
+import {
+    updateStart,
+    updateSuccess,
+    updateFailure,
+    
+  } from '../redux/user/userSlice';
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
+import { toast } from 'react-toastify';
 import 'react-circular-progressbar/dist/styles.css';
 const DashProfile = () => {
     const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -77,11 +84,60 @@ const DashProfile = () => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     };
     // console.log(formData)
+    const handleSubmit = async (e) => {
+        // setFormData({...formData ,id: currentUser._id,})
+        console.log(currentUser.user_data._id,'jjs')
+        setFormData({ ...formData, id: currentUser.user_data._id, });
+        // formData.id = currentUser._id
+        console.log(formData, "<<data")
+        e.preventDefault();
+        if (Object.keys(formData).length === 0) {
+            setUpdateUserError('No changes made');
+            return;
+        }
+        if (imageFileUploading) {
+            setUpdateUserError('Please wait for image to upload');
+            return;
+        }
+        try {
+            dispatch(updateStart);
+            const res = await fetch('/api/user/update', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' ,
+                    'x-access-token': currentUser.token // Include the token here
+                },
+                body: JSON.stringify(formData),
+              });
+              const data = await res.json();
+        
+              // setLoading(false);
+        
+              if (data.status === 'error') {
+                // console.log(data.message ,"<<ness")
+                // setErrorMessage(data.message);
+                dispatch(updateFailure(data.message))
+                setUpdateUserError(data.message);
+                toast.error(data.message)
+              }
+              if (data.status === 'success') {
+                dispatch(updateSuccess(data))
+                toast.success(data.message);
+                setUpdateUserSuccess(data.message);
+               
+              }
+
+        } catch (error) {
+            dispatch(updateFailure(error.message))
+            setUpdateUserError(error.message);
+            toast.error(error.message);
+        }
+    }
     return (
         <div className='max-w-lg mx-auto p-3 w-full'>
             <h1 className='my-7 text-center font-semibold text-3xl'>profile</h1>
 
-            <form className='flex flex-col gap-4' >
+            <form onSubmit={handleSubmit} className='flex flex-col gap-4' >
                 <input
                     type='file'
                     accept='image/*'
@@ -130,7 +186,7 @@ const DashProfile = () => {
                 <TextInput type='text' defaultValue={currentUser.user_data.username} vauleplaceholder='value' id='username' onChange={handleChange} />
                 <TextInput type='email' placeholder='email' id='email' defaultValue={currentUser.user_data.email} onChange={handleChange} />
                 <TextInput type='passowrd' placeholder='password' id='password' onChange={handleChange} />
-                <Button gradientDuoTone='purpleToBlue' outline>
+                <Button type='submit' gradientDuoTone='purpleToBlue' outline>
                     Update
                 </Button>
             </form>

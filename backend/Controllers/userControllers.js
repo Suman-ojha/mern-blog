@@ -99,23 +99,33 @@ module.exports = {
             if (req.body.profilepic) {
                 doc.profilepic = req.body.profilepic
             }
-            if (req.body.password && (req.body.password.length >= 8 || req.body.password.length < 20)) {
-                doc.password = await bcrypt.hash(req.body.password, 10);
-            } else {
-                return resp.status(400).send({
-                    status: 'error',
-                    message: 'password should be between 8 to 20 characters'
-                })
+            if (req.body.password ){
+                if(req.body.password.length >= 8 || req.body.password.length < 20){
+
+                    doc.password = await bcrypt.hash(req.body.password, 10);
+                }else{
+
+                    return resp.status(400).send({
+                        status: 'error',
+                        message: 'password should be between 8 to 20 characters'
+                    })
+                }
             }
-            const data = await User.findByIdAndUpdate(
-                { _id: mongoose.Types.ObjectId(req.body.id) },
+              
+            
+            const data = await User.findOneAndUpdate(
+                {_id : new mongoose.Types.ObjectId(req.body.id)},
                 { $set: doc },
                 { new: true }
-            )
+            ).select('-password');
+            // const {password , ...rest} = data;
+            // console.log(data)
             return resp.status(200).send({
                 status: 'success',
-                message: 'User details updated successfully.'
+                message: 'User details updated successfully.',
+                user_data:data
             })
+           
         } catch (e) {
             return resp.status(500).send({
                 status: 'error',

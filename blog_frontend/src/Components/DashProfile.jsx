@@ -86,10 +86,10 @@ const DashProfile = () => {
     // console.log(formData)
     const handleSubmit = async (e) => {
         // setFormData({...formData ,id: currentUser._id,})
-        console.log(currentUser.user_data._id,'jjs')
-        setFormData({ ...formData, id: currentUser.user_data._id, });
+        // console.log(currentUser.user_data._id,'jjs')
+        // setFormData({ ...formData, id: currentUser.user_data._id, });
         // formData.id = currentUser._id
-        console.log(formData, "<<data")
+        // console.log(formData, "<<data")
         e.preventDefault();
         if (Object.keys(formData).length === 0) {
             setUpdateUserError('No changes made');
@@ -107,7 +107,7 @@ const DashProfile = () => {
                     'Content-Type': 'application/json' ,
                     'x-access-token': currentUser.token // Include the token here
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, id: currentUser.user_data._id }),
               });
               const data = await res.json();
         

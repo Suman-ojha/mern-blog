@@ -10,6 +10,7 @@ import Oauth from '../Components/Oauth';
 
 
 export default function Signin() {
+
   const [formData, setFormData] = useState({});
   // const [errorMessage, setErrorMessage] = useState(null)
   const {loading , error : errorMessage} = useSelector(state => state.user );
@@ -30,7 +31,7 @@ export default function Signin() {
       dispatch(signInStart);
       // setLoading(true);
       // setErrorMessage(null);
-      const res = await fetch('/api/auth/signin', {
+      const res = await fetch(`/api/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

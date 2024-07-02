@@ -27,8 +27,8 @@ global.JWTSECRET = process.env.JWTSECRET;
 
 
 //register the routes
-app.use(basepath+ '/api/auth' , require('./Routes/authRoutes'))
-app.use(basepath+ '/api/user' , require('./Routes/userRoutes'))
+app.use(basepath+ '/auth' , require('./Routes/authRoutes'))
+app.use(basepath+ '/user' , require('./Routes/userRoutes'))
 
 
 

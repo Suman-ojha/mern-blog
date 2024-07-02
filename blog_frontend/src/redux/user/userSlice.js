@@ -37,10 +37,10 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
-        // updateFailure: (state, action) => {
-        //     state.loading = false;
-        //     state.error = action.payload;
-        // },
+        updateFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 })
 export const {

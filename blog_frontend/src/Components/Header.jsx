@@ -46,19 +46,19 @@ const Header = () => {
             arrowIcon={false}
             inline
             label={
-              <Avatar alt='user' img={currentUser.user_data.profilepic} rounded />
+              <Avatar alt='user' img={currentUser?.user_data?.profilepic} rounded />
             }
           >
 
             <Dropdown.Header>
               <div className="flex items-center">
                 <FaUserCheck className="mr-2 w-5 h-5" />
-                <span className="block text-sm">{currentUser.user_data.username}</span>
+                <span className="block text-sm">{currentUser?.user_data?.username}</span>
               </div>
               
               <div className="flex items-center mt-2">
                 <MdEmail className="mr-2 w-5 h-5" />
-                <span className="block text-sm">{currentUser.user_data.email}</span>
+                <span className="block text-sm">{currentUser?.user_data?.email}</span>
               </div>
             </Dropdown.Header>
             <Link to={'/dashboard?tab=profile'}>

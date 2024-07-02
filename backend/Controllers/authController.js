@@ -105,6 +105,7 @@ module.exports = {
         }
     },
     googleAuth: async function (req, resp) {
+        console.log('here google');
         try {
             const v = new Validator(req.body, {
                 email: 'required|email',

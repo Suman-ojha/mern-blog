@@ -152,7 +152,7 @@ module.exports = {
                     message: 'you are not authorized to delete this user'
                 })
             }
-            await User.findByIdAndDelete({ _id: mongoose.Types.ObjectId(req.body.id) });
+            await User.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(req.body.id) });
             return resp.status(200).send({
                 status: 'success',
                 message: 'User deleted successfully!'

@@ -1,6 +1,7 @@
-import { Alert, Button, TextInput } from 'flowbite-react'
+import { Alert, Button, Modal, TextInput } from 'flowbite-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import {
     getDownloadURL,
     getStorage,
@@ -11,12 +12,17 @@ import {
     updateStart,
     updateSuccess,
     updateFailure,
-    
-  } from '../redux/user/userSlice';
+    deleteUserStart,
+    deleteUserSuccess,
+    deleteUserFailure,
+
+} from '../redux/user/userSlice';
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { toast } from 'react-toastify';
 import 'react-circular-progressbar/dist/styles.css';
+import { Link } from 'react-router-dom';
+
 const DashProfile = () => {
     const { currentUser, error, loading } = useSelector((state) => state.user);
     const [imageFile, setImageFile] = useState(null);
@@ -103,34 +109,65 @@ const DashProfile = () => {
             dispatch(updateStart);
             const res = await fetch('/api/user/update', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json' ,
+                headers: {
+                    'Content-Type': 'application/json',
                     'x-access-token': currentUser.token // Include the token here
                 },
                 body: JSON.stringify({ ...formData, id: currentUser.user_data._id }),
-              });
-              const data = await res.json();
-        
-              // setLoading(false);
-        
-              if (data.status === 'error') {
+            });
+            const data = await res.json();
+
+            // setLoading(false);
+
+            if (data.status === 'error') {
                 // console.log(data.message ,"<<ness")
                 // setErrorMessage(data.message);
                 dispatch(updateFailure(data.message))
                 setUpdateUserError(data.message);
                 toast.error(data.message)
-              }
-              if (data.status === 'success') {
+            }
+            if (data.status === 'success') {
                 dispatch(updateSuccess(data))
                 toast.success(data.message);
                 setUpdateUserSuccess(data.message);
-               
-              }
+
+            }
 
         } catch (error) {
             dispatch(updateFailure(error.message))
             setUpdateUserError(error.message);
             toast.error(error.message);
+        }
+    }
+    const handleDeleteUser = async (e) => {
+        // toast('delete account')
+        setShowModal(false);
+        try {
+            dispatch(deleteUserStart());
+            const res = await fetch('/api/user/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': currentUser.token // Include the token here
+                },
+                body: JSON.stringify({ id: currentUser.user_data._id }),
+            })
+            const data = await res.json();
+
+            // setLoading(false);
+
+            if (data.status === 'error') {
+                dispatch(deleteUserFailure(data.message));
+                toast.error(data.message)
+            }
+            if (data.status === 'success') {
+                dispatch(deleteUserSuccess(data))
+                toast.success(data.message);
+            }
+
+        } catch (error) {
+            dispatch(deleteUserFailure(error.message));
+            toast.error(error.message)
         }
     }
     return (
@@ -186,11 +223,69 @@ const DashProfile = () => {
                 <TextInput type='text' defaultValue={currentUser.user_data.username} vauleplaceholder='value' id='username' onChange={handleChange} />
                 <TextInput type='email' placeholder='email' id='email' defaultValue={currentUser.user_data.email} onChange={handleChange} />
                 <TextInput type='passowrd' placeholder='password' id='password' onChange={handleChange} />
-                <Button type='submit' gradientDuoTone='purpleToBlue' outline>
-                    Update
+                <Button
+                    type='submit'
+                    gradientDuoTone='purpleToBlue'
+                    outline
+                    disabled={loading || imageFileUploading}
+                >
+                    {loading ? 'Loading...' : "Update"}
                 </Button>
+                {currentUser.user_data.isAdmin && (
+                    <Link to={'/create-post'}>
+                        <Button
+                            type='button'
+                            gradientDuoTone='purpleToBlue'
+                            className='w-full'
+                            // outline
+                        >
+                            Create Post
+                        </Button>
+                    </Link>
+                )}
             </form>
-            <Button outline className="w-full mt-4 bg-gradient-to-r from-red-500 to-red-700 text-white"> Delete Account</Button>
+            <Button outline className="w-full mt-4 bg-gradient-to-r from-red-500 to-red-700 text-white" onClick={() => setShowModal(true)}> Delete Account</Button>
+            {/* {updateUserSuccess && (
+                <Alert color='success' className='mt-5'>
+                    {updateUserSuccess}
+                </Alert>
+            )} */}
+            {updateUserError && (
+                <Alert color='failure' className='mt-5'>
+                    {updateUserError}
+                </Alert>
+            )}
+            {error && (
+                <Alert color='failure' className='mt-5'>
+                    {error}
+                </Alert>
+            )}
+            <Modal
+                show={showModal}
+                onClose={() => setShowModal(false)}
+                popup
+                size='md'
+            >
+                <Modal.Header />
+                <Modal.Body>
+                    <div className="text-center">
+                        <HiOutlineExclamationCircle
+                            className='w-14 h-14 mx-auto text-gray-500 dark:text-gray-300 mb-4'
+                        />
+                        <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+                            Are you sure you want to delete your account?
+                        </h3>
+                        <div className="flex justify-center gap-4">
+                            <Button color='failure' onClick={handleDeleteUser}>
+                                Yes, I'm sure
+                            </Button>
+                            <Button color='gray' onClick={() => setShowModal(false)}>
+                                No, cancel
+                            </Button>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

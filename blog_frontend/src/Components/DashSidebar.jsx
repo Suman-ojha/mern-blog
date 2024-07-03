@@ -33,10 +33,11 @@ const DashSidebar = () => {
     }, [location.search])
 
     const handleSignout = async () => {
+        console.log('signout')
         dispatch(signoutSuccess())
         // Clear the persisted state from localStorage
         localStorage.removeItem('persist:root');
-        toast.success('You have successfully signed out.');
+        toast.success('You have successfully logged out.');
         navigate('/signin')
     }
     return (
@@ -44,7 +45,7 @@ const DashSidebar = () => {
             <Sidebar.Items>
                 <Sidebar.ItemGroup>
                     <Link to='/dashboard?tab=profile'>
-                        <Sidebar.Item active={tab === 'profile'} label={"User"} icon={HiUser} labelColor='dark' as='div'>
+                        <Sidebar.Item active={tab === 'profile'} label={currentUser.user_data.isAdmin === false ? "User" : 'Admin'} icon={HiUser} labelColor='dark' as='div'>
                             Profile
                         </Sidebar.Item>
                     </Link>

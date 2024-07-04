@@ -77,7 +77,7 @@ module.exports = {
                     message: 'You are not allowed to delete a post'
                 })
             }
-            console.log(req.body);
+            // console.log(req.body);
             await Post.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(req.body.id) })
             return resp.status(200).send({
                 status: 'success',

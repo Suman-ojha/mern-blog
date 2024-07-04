@@ -1,5 +1,5 @@
 import { Button, FileInput, Select, TextInput } from 'flowbite-react'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {
@@ -11,20 +11,63 @@ import {
 import { app } from '../firebase'
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
-const CreatePost = () => {
+const UpdatePost = () => {
     const { currentUser, error, loading } = useSelector((state) => state.user);
     const [file, setFile] = useState(null);
     const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [imageFileUploadError, setImageFileUploadError] = useState(null);
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({
+        title: '',
+        category: 'uncategorized',
+        content: '',
+    });
     const [publishError, setPublishError] = useState(null);
     const [imageFileUploading, setImageFileUploading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { postId } = useParams();
+    // console.log(postId , "post")
+    useEffect(() => {
+        let isMounted = true;
+        try {
+
+            const fetchPost = async () => {
+
+                const res = await fetch('/api/post/get-posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'x-access-token': currentUser.token // Include the token here
+                    },
+                    body: JSON.stringify({ userId: currentUser.user_data._id, postId }),
+                });
+                const data = await res.json();
+                // console.log(data.posts[0], '<data')
+                if (data.status === 'error') {
+                    // console.log(data.message);
+                    setPublishError(data.message);
+                    return;
+                }
+                if (data.status === 'success') {
+                    setPublishError(null);
+                    setFormData(data.posts[0]);
+                }
+
+            }
+            fetchPost();
+
+        } catch (error) {
+            console.log(error.message);
+        }
+        return () => {
+            isMounted = false;
+        }
+    }, [postId])
+
 
     const handelUploadImage = async () => {
         setImageFileUploading(true);
@@ -80,13 +123,14 @@ const CreatePost = () => {
         e.preventDefault();
         // console.log('form submit..');
         try {
-            const res = await fetch('/api/post/create', {
+            const res = await fetch('/api/post/update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': currentUser.token // Include the token here
                 },
-                body: JSON.stringify(formData),
+                // body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, id: postId }),
             });
             const data = await res.json();
             // console.log(data, "<<data")
@@ -117,9 +161,10 @@ const CreatePost = () => {
                         id='title'
                         className='flex-1'
                         onChange={handleChange}
+                        value={formData.title}
                         required
                     />
-                    <Select id='category' onChange={handleChange}>
+                    <Select id='category' onChange={handleChange} value={formData.category}>
                         <option value="uncategorized">select a category</option>
                         <option value="javascript">Javascript</option>
                         <option value="python">Python</option>
@@ -146,10 +191,11 @@ const CreatePost = () => {
                         src={formData.image}
                         alt='upload-image-for-post'
                         className='w-full h-70 object-cover'
-                    /> 
+                    />
                 )}
                 <ReactQuill
                     theme='snow'
+                    value={formData.content}
                     placeholder='write your note...'
                     className='h-72 mb-12'
                     onChange={(value) => {
@@ -177,4 +223,4 @@ const CreatePost = () => {
     )
 }
 
-export default CreatePost
+export default UpdatePost

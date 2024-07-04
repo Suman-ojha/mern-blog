@@ -136,7 +136,7 @@ const DashPost = () => {
                       />
                     </Link>
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className='font-medium text-gray-900 dark:text-white'>
                     <Link to={`/post/${post.slug}`} className='cursor-pointer'>
                       {post.title}
                     </Link>

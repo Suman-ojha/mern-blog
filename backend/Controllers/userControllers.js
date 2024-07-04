@@ -33,6 +33,7 @@ module.exports = {
                 createdAt: { $gte: oneMonthAgo },
             });
             return resp.status(200).send({
+                status :'success',
                 users: usersWithoutPassword,
                 total_user_count: totalUsers,
                 last_month_user_count: lastMonthUsers,

@@ -33,7 +33,7 @@ const DashSidebar = () => {
     }, [location.search])
 
     const handleSignout = async () => {
-        console.log('signout')
+        // console.log('signout')
         dispatch(signoutSuccess())
         // Clear the persisted state from localStorage
         localStorage.removeItem('persist:root');
@@ -43,12 +43,17 @@ const DashSidebar = () => {
     return (
         <Sidebar className='w-full'>
             <Sidebar.Items>
-                <Sidebar.ItemGroup>
+                <Sidebar.ItemGroup className='flex flex-col gap-1'>
                     <Link to='/dashboard?tab=profile'>
                         <Sidebar.Item active={tab === 'profile'} label={currentUser.user_data.isAdmin === false ? "User" : 'Admin'} icon={HiUser} labelColor='dark' as='div'>
                             Profile
                         </Sidebar.Item>
                     </Link>
+                   {currentUser.user_data.isAdmin &&  <Link to='/dashboard?tab=posts'>
+                        <Sidebar.Item active={tab === 'posts'}  icon={HiDocumentText}  as='div'>
+                            Posts
+                        </Sidebar.Item>
+                    </Link>}
                     <Sidebar.Item icon={HiArrowSmRight} className='cursor-pointer' onClick={handleSignout}>
                         Sign Out
                     </Sidebar.Item>

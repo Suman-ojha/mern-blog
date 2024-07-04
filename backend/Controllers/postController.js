@@ -1,6 +1,6 @@
 const { Validator } = require("node-input-validator");
 var mongoose = require('mongoose');
-const { default: Post } = require("../models/Post");
+const Post = require("../models/Post");
 
 module.exports = {
     create_post: async function (req, resp, next) {
@@ -51,6 +51,7 @@ module.exports = {
                 data: postData
             })
         } catch (e) {
+            console.log(e , "<<err");
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'something went wrong.!'
@@ -76,6 +77,7 @@ module.exports = {
                     message: 'You are not allowed to delete a post'
                 })
             }
+            console.log(req.body);
             await Post.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(req.body.id) })
             return resp.status(200).send({
                 status: 'success',
@@ -139,11 +141,13 @@ module.exports = {
             const startIndex = parseInt(req.body.startIndex) || 0;
             const limit = parseInt(req.body.limit) || 9;
             const sortDirection = req.body.order === 'asc' ? 1 : -1;
+            // console.log(sortDirection)
+            // console.log(req.body);
             const posts = await Post.find({
-                ...(req.body.userId && { userId: req.body.userId }),//condition check using sprad operator
+                ...(req.body.userId && { userId: new mongoose.Types.ObjectId(req.body.userId) }),//condition check using sprad operator
                 ...(req.body.category && { category: req.body.category }),
                 ...(req.body.slug && { slug: req.body.slug }),
-                ...(req.body.postId && { _id: req.body.postId }),
+                ...(req.body.postId && { _id: new mongoose.Types.ObjectId(req.body.postId) }),
                 ...(req.body.searchKey && {
                     $or: [
                         { title: { $regex: req.body.searchKey, $options: 'i' } },
@@ -154,7 +158,7 @@ module.exports = {
                 .sort({ updatedAt: sortDirection })
                 .skip(startIndex)
                 .limit(limit);
-
+            // console.log(posts , "<post")
             const totalPosts = await Post.countDocuments();
 
             const now = new Date();

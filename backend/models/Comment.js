@@ -8,16 +8,21 @@ const commentSchema = new mongoose.Schema(
       required: true,
     },
     postId: {
-      type: String,
+      type: Schema.Types.Mixed,
       required: true,
     },
     userId: {
-      type: String,
+      type: Schema.Types.Mixed,
       required: true,
     },
     likes: {
       type: Array,
-      default: [],
+      default: [
+        {
+          userId: { type: Schema.Types.Mixed, },
+          username: { type: String }
+        }
+      ],
     },
     numberOfLikes: {
       type: Number,

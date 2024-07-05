@@ -13,18 +13,22 @@ import OnlyAdminPrivateRoutes from './Components/OnlyAdminPrivateRoutes'
 import CreatePost from './pages/CreatePost'
 import UpdatePost from './pages/UpdatePost'
 import PostPage from './pages/PostPage'
+import ScrollToTop from './Components/ScrollToTop'
+import Search from './pages/Search'
 
 
 const App = () => {
   return (
 
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path='/search' element={<Search />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>

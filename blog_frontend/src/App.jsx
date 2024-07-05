@@ -12,6 +12,7 @@ import PrivateRoutes from './Components/PrivateRoutes'
 import OnlyAdminPrivateRoutes from './Components/OnlyAdminPrivateRoutes'
 import CreatePost from './pages/CreatePost'
 import UpdatePost from './pages/UpdatePost'
+import PostPage from './pages/PostPage'
 
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
         <Route path="/projects" element={<Projects />} />
+        <Route path='/post/:postSlug' element={<PostPage />} />
       </Routes>
       <FooterComp />
     </BrowserRouter>

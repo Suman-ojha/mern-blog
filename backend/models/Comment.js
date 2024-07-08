@@ -15,15 +15,12 @@ const commentSchema = new mongoose.Schema(
       type: Schema.Types.Mixed,
       required: true,
     },
-    likes: {
-      type: Array,
-      default: [
-        {
-          userId: { type: Schema.Types.Mixed, },
-          username: { type: String }
-        }
-      ],
-    },
+    likes: [
+      {
+        userId: { type: Schema.Types.ObjectId },
+        username: { type: String }
+      }
+    ],
     numberOfLikes: {
       type: Number,
       default: 0,

@@ -1,6 +1,6 @@
 const { Validator } = require("node-input-validator")
 const Comment = require("../models/Comment")
-
+var mongoose = require('mongoose')
 const Post = require("../models/Post")
 
 module.exports = {
@@ -18,16 +18,18 @@ module.exports = {
                     error: v.errors
                 })
             }
-            if (req.body.userId !== req.authId) {
+            // if (req.body.userId !== req.authId) {
+            if (!req.authId) {
                 return resp.status(403).send({
                     status: 'error',
-                    message: 'You are not allowed to create a post'
+                    message: 'You are not allowed to comment on this post'
                 })
             }
             let doc = {
-                postId: req.body.postId,
-                userId: req.authId,
+                postId: new mongoose.Types.ObjectId(req.body.postId),
+                userId: new mongoose.Types.ObjectId(req.authId),
                 content: req.body.content,
+                likes : []
             }
             let comment = await Comment.create(doc)
             return resp.status(200).send({
@@ -62,6 +64,7 @@ module.exports = {
                     message: 'Comment not found'
                 })
             }
+            //which user made that comment & admin can edit that .
             if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
                 return resp.status(403).send({
                     status: 'error',
@@ -130,7 +133,13 @@ module.exports = {
                     error: v.errors
                 })
             }
-            const comment = await Comment.findById(req.params.comment_id);
+            const comment = await Comment.findOne({_id: new mongoose.Types.ObjectId(req.body.comment_id)});
+            let doc = {
+                userId: new mongoose.Types.ObjectId(req.authId),
+                username : req.authData.username ?? ''
+            }
+            // if(comment.likedUsers.includes(doc.userId)){
+            // console.log(doc , "<<comment");
             if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
                 return resp.status(403).send({
                     status: 'error',
@@ -143,7 +152,33 @@ module.exports = {
                     message: 'Comment not found!'
                 })
             }
-        } catch (error) {
+            // const userIndex = comment.likes.findIndex(like => like.userId === req.authId);
+            const userIndex = comment.likes.findIndex(like => like.userId.toString() === req.authId.toString());
+            // console.log(userIndex,"ins")
+
+            if (userIndex === -1) {
+              // User has not liked the comment
+              comment.numberOfLikes += 1;
+              comment.likes.push(doc);
+            } else {
+              // User has already liked the commen
+              
+              comment.numberOfLikes -= 1;
+              comment.likes.splice(userIndex, 1);
+            }
+            
+            // Save the updated comment
+            if(comment){
+
+                await comment.save();
+            }
+            return  resp.status(200).send({
+                status: 'success',
+                message: 'Comment liked successfully',
+                comment: comment
+            })
+        } catch (e) {
+            // console.log(e);
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'
@@ -194,6 +229,7 @@ module.exports = {
         }
     },
     fetch_post_comments: async function (req, resp, next) {
+        // console.log('herte');
         try {
             const v = new Validator(req.body, {
                 post_id: "required",
@@ -206,9 +242,10 @@ module.exports = {
                     error: v.errors
                 })
             }
-            const comments = await Comment.findById({ postId: req.body.post_id }).sort({
+            const comments = await Comment.find({ postId: new mongoose.Types.ObjectId(req.body.post_id) }).sort({
                 createdAt: -1,
             });
+            // console.log(comments,"<<")
             if (!comments) {
                 return resp.status(404).send({
                     status: 'error',
@@ -220,7 +257,7 @@ module.exports = {
                 message :'comments on this post fetched successfully',
                 data : comments
             })
-        } catch (error) {
+        } catch (e) {
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'

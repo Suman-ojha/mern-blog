@@ -147,13 +147,15 @@ module.exports = {
                     error: v.errors
                 })
             }
-            if (!req.authData.isAdmin && req.authId !== req.body.id) {
+            const data = await User.findOne({_id : new mongoose.Types.ObjectId(req.body.id)})
+            if ((!req.authData.isAdmin && req.authId !== req.body.id) || data.isAdmin) {
                 return resp.status(404).send({
                     status: 'error',
                     message: 'you are not authorized to delete this user'
                 })
             }
-            await User.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(req.body.id) });
+            //one admin can not delete other admin also..only super admin has all access
+            // await User.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(req.body.id) });
             return resp.status(200).send({
                 status: 'success',
                 message: 'User deleted successfully!'
@@ -178,7 +180,7 @@ module.exports = {
                     error: v.errors
                 })
             }
-            const data = await User.findOne({ _id: mongoose.Types.ObjectId(req.body.id) })
+            const data = await User.findOne({ _id: new mongoose.Types.ObjectId(req.body.id) })
             if (!data) {
                 return resp.status(404).send({
                     status: 'error',

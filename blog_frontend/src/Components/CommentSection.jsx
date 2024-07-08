@@ -1,5 +1,5 @@
-import { Button, Modal, Textarea } from 'flowbite-react'
-import { useState } from 'react'
+import { Alert, Button, Modal, Textarea } from 'flowbite-react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
@@ -16,6 +16,10 @@ const CommentSection = ({ postId }) => {
     const [commentToDelete, setCommentToDelete] = useState(null);
     // console.log(comment)
     const navigate = useNavigate();
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (comment.length > 200) {
@@ -46,15 +50,71 @@ const CommentSection = ({ postId }) => {
         }
 
     }
+    useEffect(() => {
+        const getComments = async () => {
+            try {
+                const res = await fetch(`/api/comment/get-post-comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+
+                        post_id: postId,
+                        // userId: currentUser.user_data._id,
+                    }),
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    // console.log((data.data ,'jk'));
+                    setComments(data?.data);
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        };
+        getComments();
+    }, [postId]);
     const handelDeletePost = (e) => {
 
     }
-    const handleLike = (e) => {
-
+    const handleLike = async (commentId) => {
+        try {
+            if (!currentUser) {
+                navigate('/signin');
+                //if user is not signed in..not able to like that
+            }
+            const res = await fetch('/api/comment/liked-comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': currentUser.token // Include the token here
+                },
+                body: JSON.stringify({ comment_id: commentId })
+            })
+            if (res.ok) {
+                const data = await res.json();
+                // console.log(data,"<<dasas")
+                setComments(
+                    comments.map((comment) =>
+                        comment._id === commentId
+                            ? {
+                                ...comment,
+                                likes: data.comment.likes,
+                                numberOfLikes: data.comment.numberOfLikes,
+                            }
+                            : comment
+                    )//only update the mathced comment 
+                );
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     }
     const handleEdit = (e) => {
 
     }
+    // console.log(comments,"comm");
     return (
         <div className=' max-w-2xl mx-auto w-full p-3'>
             {currentUser ?
@@ -114,6 +174,7 @@ const CommentSection = ({ postId }) => {
                         </div>
                     </div>
                     {comments.map((comment) => (
+
                         <Comment
                             key={comment._id}
                             comment={comment}

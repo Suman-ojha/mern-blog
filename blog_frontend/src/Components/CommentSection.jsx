@@ -22,7 +22,11 @@ const CommentSection = ({ postId }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (comment.length > 200) {
+        if(!currentUser){
+            navigate('/signin');
+            return;
+        }
+        if (comment.length > 200 || comment.length===0) {
             return;
         }
         try {
@@ -43,7 +47,7 @@ const CommentSection = ({ postId }) => {
                 toast.success(data.message);
                 setComment('');
                 setCommentError(null);
-                setComments([data, ...comments]);
+                setComments([ ...comments, data.comment]);
             }
         } catch (error) {
             setCommentError(error.message)
@@ -75,8 +79,27 @@ const CommentSection = ({ postId }) => {
         };
         getComments();
     }, [postId]);
-    const handelDeletePost = (e) => {
-
+    const handleDelete = async (comment_id) => {
+        // console.log(comment_id, 'ds')
+        setShowModal(false);
+        try {
+            const res = await fetch('/api/comment/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': currentUser.token // Include the token here
+                },
+                body: JSON.stringify({ comment_id})
+            })
+            const data = await res.json();
+            // console.log(data , "<<<data")
+            if(res.ok){
+                toast.success(data.message);
+                setComments(comments.filter((comment)=> comment._id!==comment_id))
+            }
+        } catch (e) {
+            console.log(e.message)
+        }
     }
     const handleLike = async (commentId) => {
         try {
@@ -111,12 +134,17 @@ const CommentSection = ({ postId }) => {
             console.log(error.message);
         }
     }
-    const handleEdit = (e) => {
-
+    const handleEdit = async (comment, editedContent) => {
+        setComments(
+            comments.map((item) =>
+                item._id !== comment._id ? item : { ...item, content: editedContent }
+                //edited the mathced comments 
+            )
+        )
     }
     // console.log(comments,"comm");
     return (
-        <div className=' max-w-2xl mx-auto w-full p-3'>
+        <div className='max-w-2xl mx-auto w-full p-3'>
             {currentUser ?
                 (
                     <div className="flex items-center gap-1 my-6 text-gray-500 text-sm">
@@ -173,10 +201,10 @@ const CommentSection = ({ postId }) => {
                             <p>{comments.length}</p>
                         </div>
                     </div>
-                    {comments.map((comment) => (
+                    {comments.map((comment ,idx) => (
 
                         <Comment
-                            key={comment._id}
+                            key={idx}
                             comment={comment}
                             onLike={handleLike}
                             onEdit={handleEdit}
@@ -202,7 +230,10 @@ const CommentSection = ({ postId }) => {
                             Are you sure you want to delete this post?
                         </h3>
                         <div className="flex justify-center gap-4">
-                            <Button color='failure' onClick={handelDeletePost}>
+                            <Button
+                                color='failure'
+                                onClick={() => handleDelete(commentToDelete)}
+                            >
                                 Yes, I'm sure
                             </Button>
                             <Button color='gray' onClick={() => setShowModal(false)}>

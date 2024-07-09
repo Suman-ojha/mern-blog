@@ -13,6 +13,7 @@ const PostPage = () => {
     const [error, setError] = useState(false);
     const [post, setPost] = useState(null);
     const [recentPosts, setRecentPosts] = useState(null);
+    // console.log(recentPosts , "<<recentPost");
 
     useEffect(() => {
         let isMounted = true;
@@ -123,13 +124,13 @@ const PostPage = () => {
                 <CallToAction />
             </div>
             <CommentSection postId={post._id} />
-            {/* <div className='flex flex-col justify-center items-center mb-5'>
+            <div className='flex flex-col justify-center items-center mb-5'>
                 <h1 className='text-xl mt-5'>Recent articles</h1>
                 <div className='flex flex-wrap gap-5 mt-5 justify-center'>
                     {recentPosts &&
                         recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
                 </div>
-            </div> */}
+            </div>
         </main>
     )
 }

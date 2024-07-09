@@ -4,7 +4,7 @@ const commentController = require('../Controllers/commentController');
 const auth_middleware = require('../Middlewares/auth_middleware');
 
 router.post('/create' , auth_middleware.checkAuth  , commentController.create_comment)
-router.post('/update' , auth_middleware.checkAuth  , commentController.edit_comment)
+router.post('/edit' , auth_middleware.checkAuth  , commentController.edit_comment)
 router.post('/delete' , auth_middleware.checkAuth  , commentController.delete_comment)
 
 //like comment

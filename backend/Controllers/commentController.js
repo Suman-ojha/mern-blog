@@ -35,9 +35,9 @@ module.exports = {
             return resp.status(200).send({
                 status: 'success',
                 message: 'Comment created on post successfully!',
-                data: comment
+                comment: comment
             })
-        } catch (error) {
+        } catch (e) {
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'
@@ -48,6 +48,7 @@ module.exports = {
         try {
             const v = new Validator(req.body, {
                 comment_id: "required",
+                content: "required",
             })
             const matched = await v.check()
             if (!matched) {
@@ -75,16 +76,16 @@ module.exports = {
                 content: req.body.content,
             }
             const editedComment = await Comment.findByIdAndUpdate(
-                req.body.comment_id,
+                {_id : new mongoose.Types.ObjectId( req.body.comment_id)},
                 { $set: doc },
                 { new: true }
             );
             return resp.status(200).send({
                 status: 'success',
-                message: 'Comment updated on this post successfully!',
+                message: 'Comment edited successfully!',
                 data: editedComment
             })
-        } catch (error) {
+        } catch (e) {
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'
@@ -104,15 +105,20 @@ module.exports = {
                     error: v.errors
                 })
             }
-            const comment = await Comment.findById(req.params.comment_id);
+            const comment = await Comment.findById(req.body.comment_id);
             if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
                 return resp.status(403).send({
                     status: 'error',
                     message: 'You are not allowed to delete this comment'
                 })
             }
-            await Comment.findByIdAndDelete(req.params.comment_id);
-        } catch (error) {
+            await Comment.findByIdAndDelete({_id: new mongoose.Types.ObjectId(req.body.comment_id)});
+            return resp.status(200).send({
+                status:'success',
+                message :'comment deleted successfully!'
+            })
+        } catch (e) {
+            console.log(e)
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'
@@ -221,7 +227,7 @@ module.exports = {
                 totalComments,
             })
 
-        } catch (error) {
+        } catch (e) {
             return resp.status(500).send({
                 status: 'error',
                 message: e?.message ?? 'Something went wrong!'

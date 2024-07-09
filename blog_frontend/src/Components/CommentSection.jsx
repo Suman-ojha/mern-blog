@@ -96,6 +96,7 @@ const CommentSection = ({ postId }) => {
             if(res.ok){
                 toast.success(data.message);
                 setComments(comments.filter((comment)=> comment._id!==comment_id))
+                setShowModal(false);
             }
         } catch (e) {
             console.log(e.message)

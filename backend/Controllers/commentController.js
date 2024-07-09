@@ -206,7 +206,7 @@ module.exports = {
                 .sort({ createdAt: sortDirection })
                 .skip(startIndex)
                 .limit(limit);
-
+            
             const totalComments = await Comment.countDocuments();
 
             let now = new Date();

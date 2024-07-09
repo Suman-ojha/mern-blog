@@ -11,7 +11,7 @@ import ThemeProvider from './Components/ThemeProvider.jsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  
     <PersistGate persistor={persistor}>
       <Provider store={store}>
         <ThemeProvider>
@@ -20,5 +20,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </Provider>
       <ToastContainer />
     </PersistGate>
-  </React.StrictMode>,
+ ,
 )

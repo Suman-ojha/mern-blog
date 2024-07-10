@@ -1,7 +1,6 @@
 const { Validator } = require("node-input-validator");
 var mongoose = require('mongoose');
 const Post = require("../models/Post");
-
 module.exports = {
     create_post: async function (req, resp, next) {
         try {
@@ -138,6 +137,7 @@ module.exports = {
     },
     get_posts: async function (req, resp, next) {
         try {
+           
             const startIndex = parseInt(req.body.startIndex) || 0;
             const limit = parseInt(req.body.limit) || 9;
             const sortDirection = req.body.order === 'asc' ? 1 : -1;

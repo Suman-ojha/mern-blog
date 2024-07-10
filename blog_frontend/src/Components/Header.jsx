@@ -8,14 +8,24 @@ import { MdEmail } from "react-icons/md";
 import {toggleTheme} from '../redux/theme/themeSlice'
 import {signoutSuccess} from '../redux/user/userSlice'  
 import { toast } from 'react-toastify';
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const path = useLocation().pathname
   const dispatch = useDispatch()
   const { currentUser } = useSelector(state => state.user)
   const { theme } = useSelector((state) => state.theme);
+  const [searchTerm, setSearchTerm] = useState('')
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    // console.log(urlParams,"url")
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl)
+    }
+  }, [location.search])
   const handleSignout = async ()=>{
     dispatch(signoutSuccess())
     // Clear the persisted state from localStorage
@@ -23,6 +33,14 @@ const Header = () => {
     toast.success('You have successfully logged out.');
     navigate('/signin')
   }
+  const handleSearch = (e)=>{
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('searchTerm', searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  }
+  // console.log(searchTerm,"searcg");
   return (
     <Navbar className="border-b-2">
       <Link
@@ -34,11 +52,13 @@ const Header = () => {
         </span>
         Blog
       </Link>
-      <form>
+      <form onSubmit={handleSearch}>
         <TextInput
           placeholder="search..."
           rightIcon={AiOutlineSearch}
-          className="hidden lg:inline"
+          className='hidden lg:inline'
+          value={searchTerm}
+          onChange={(e)=>setSearchTerm(e.target.value)}
         />
       </form>
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>

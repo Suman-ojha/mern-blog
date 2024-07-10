@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const path = require('path')
 require('dotenv').config();
 // Initialize MongoDB Connection
 require('./DB/connection')
@@ -20,7 +21,7 @@ app.use(fileUpload());
 // app.use(cors);
 
 var basepath=''
-
+const __dirname = path.resolve()
 //Global varibale declaration
 global.basepath = basepath;
 global.JWTSECRET = process.env.JWTSECRET;
@@ -40,6 +41,11 @@ app.get('/test',(req,res)=>{
         message :"message send successfully..!!"
     })
 })
+
+app.use(express.static(path.join(__dirname, '/blog_frontend/dist')));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'blog_frontend', 'dist', 'index.html'));
+});
 app.all('*', (req, res) => { 
     return res.status(404).send({
         status:"error",

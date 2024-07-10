@@ -21,7 +21,7 @@ app.use(fileUpload());
 // app.use(cors);
 
 var basepath=''
-const __dirname = path.resolve()
+const __dir = path.resolve()
 //Global varibale declaration
 global.basepath = basepath;
 global.JWTSECRET = process.env.JWTSECRET;
@@ -42,9 +42,9 @@ app.get('/test',(req,res)=>{
     })
 })
 
-app.use(express.static(path.join(__dirname, '/blog_frontend/dist')));
+app.use(express.static(path.join(__dir, '/blog_frontend/dist')));
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'blog_frontend', 'dist', 'index.html'));
+    res.sendFile(path.join(__dir, 'blog_frontend', 'dist', 'index.html'));
 });
 app.all('*', (req, res) => { 
     return res.status(404).send({

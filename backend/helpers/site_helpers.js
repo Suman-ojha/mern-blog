@@ -3,9 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 module.exports ={
-    generateToken : async function (payload) {
+    generateToken : async function (payload , expires='1d') {
         //here jwt token in encrypted into base64
-        const options = { expiresIn: '1d' };
+        const options = { expiresIn: expires };
         const tokendata = payload;
         const token = jwt.sign(tokendata, JWTSECRET, options);
         const encodedToken = Buffer.from(token).toString('base64');

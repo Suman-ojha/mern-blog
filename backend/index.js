@@ -25,6 +25,16 @@ const __dir = path.resolve()
 //Global varibale declaration
 global.basepath = basepath;
 global.JWTSECRET = process.env.JWTSECRET;
+//smtp credential
+global.SMTPHOST = process.env.SMTPHOST;
+global.SMTPUSERNAME = process.env.SMTPUSERNAME;
+global.SMTPFROMMAIL = process.env.SMTPFROMMAIL;
+global.SMTPPASSWORD = process.env.SMTPPASSWORD;
+global.SMTPMETHOD = process.env.SMTPMETHOD;
+global.SMTPPORT = process.env.SMTPPORT;
+
+//app url
+global.APP_URL = process.env.APP_URL;
 
 
 //register the routes

@@ -20,15 +20,25 @@ const ForgotPassword = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/comment/edit', {
+      const res = await fetch('/api/forget-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': currentUser.token
+          // 'x-access-token': currentUser.token
         },
-        body: JSON.stringify({ comment_id: comment._id, content: editedContent, })
+        body: JSON.stringify({ email })
       })
+      const data = await res.json();
+      if (data.status === 'error') {
+        setLoading(false);
+        toast.error(data.message);
+      }
+      if (res.ok) {
+        setLoading(false);
+        toast.success("Email sent successfully!");
+      }
     } catch (error) {
+      setLoading(false);
       setErrorMessage(error.message);
     }
 

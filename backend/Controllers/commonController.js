@@ -43,15 +43,16 @@ module.exports = {
                 port: SMTPPORT
             };
             let subject = "Reset Password";
-
+            
             let msg_body = `<h1>Reset Your Password</h1>
             <p>Click on the following link to reset your password:</p>
             <a href="${APP_URL}/reset-password/${token}">${APP_URL}/reset-password/${token}</a>
             <p>The link will expire in 10 minutes.</p>
             <p>If you didn't request a password reset, please ignore this email.</p>`;
-
+            // let msg_body =`${APP_URL}/reset-password/${token}`;
+            // console.log(user_details?.email)
             let sendemail_resetToken = await EmailHelper.send_email(smtp_data, user_details?.email, subject, msg_body);
-
+            // console.log(sendemail_resetToken,'email response')
             if (sendemail_resetToken) {
                 return resp.status(200).send({
                     status: 'success',
@@ -74,18 +75,19 @@ module.exports = {
     resetPassword: async function (req, resp, next) {
         try {
             const token = req.body.token;
+            // console.log(token)
             const decodedData = await site_helpers.decryptToken(token);
-
+            // console.log(decodedData.status,"docodeData")
             // If the token is invalid, return an error
-            if (!decodedToken) {
+            if (decodedData.status === 'false') {
                 return resp.status(401).send({
                     status: 'error',
-                    message: "Link has expired!"
+                    message: "Please generate new link , it has expired! "
                 });
             }
 
             // find the user with the id from the token
-            const user = await User.findOne({ _id: decodedToken.id });
+            const user = await User.findOne({ _id: new mongoose.Types.ObjectId(decodedData.id) });
             if (!user) {
                 return resp.status(401).send({
                     status: 'error',
@@ -94,14 +96,14 @@ module.exports = {
             }
             // Hash the new password
             // const salt = await bcrypt.genSalt(10);
-            let checked_password = await bcrypt.compare(req.body.newpassword, user.password);
+            let checked_password = await bcrypt.compare(req.body.password, user.password);
             if (checked_password) {
                 return resp.status(401).send({
                     status: 'error',
                     message: "please don't repeat same credential!"
                 })
             }
-            let newPassword = await bcrypt.hash(req.body.newpassword, 10);
+            let newPassword = await bcrypt.hash(req.body.password, 10);
 
             // Update user's password, clear reset token and expiration time
             user.password = newPassword;
@@ -110,7 +112,7 @@ module.exports = {
             // Send success response
             return resp.status(200).send({
                 status: 'success',
-                message: "Password updated successfully!"
+                message: "Credential updated successfully!"
             });
 
         } catch (e) {

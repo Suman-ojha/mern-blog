@@ -38,7 +38,7 @@ app.use(basepath+ '/api/auth' , require('./Routes/authRoutes'))
 app.use(basepath+ '/api/user' , require('./Routes/userRoutes'))
 app.use(basepath+ '/api/post' , require('./Routes/postRoutes'))
 app.use(basepath+ '/api/comment' , require('./Routes/commentRoutes'))
-// app.use(basepath+ '/api/c\' , require('./Routes/commentRoutes'))
+app.use(basepath+ '/api' , require('./Routes/publicRoutes'))
 
 
 

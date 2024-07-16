@@ -7,6 +7,7 @@ module.exports = {
     sendEmail: async function (maildata) {
         // console.log('here')
         var smtp_data = maildata.smtp_data;
+        // console.log(maildata , "maildata")
         let transporter = nodemailer.createTransport({
             host: smtp_data.host_address,
             port: smtp_data.port,
@@ -25,10 +26,11 @@ module.exports = {
             bcc: maildata?.bcc,
             subject: maildata.subject,
             text: maildata.msg_body,
-            html: maildata.msg_body,
+            // html: maildata.msg_body,
             attachments: maildata.attachments || "",
         };
-        // console.log(process.env.EMAIL_TEMPLATE_PATH , "template_path")
+        // backend/views/mail
+        console.log(process.env.EMAIL_TEMPLATE_PATH , "template_path")
         // 'views\mail\common-template.html'
         await _read_html_file(process.env.EMAIL_TEMPLATE_PATH + "/common-template.html")
             .then(function (html) {
@@ -47,6 +49,7 @@ module.exports = {
             });
 
         let info = await transporter.sendMail(send_mail_document);
+        // console.log(info,"<<info")
         return info;
 
     },

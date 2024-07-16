@@ -15,6 +15,8 @@ import UpdatePost from './pages/UpdatePost'
 import PostPage from './pages/PostPage'
 import ScrollToTop from './Components/ScrollToTop'
 import Search from './pages/Search'
+import ResetPassword from './pages/ResetPassword'
+import ForgotPassword from './pages/ForgotPassword'
 
 
 const App = () => {
@@ -29,8 +31,11 @@ const App = () => {
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path='/search' element={<Search />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/dashboard" element={<Dashboard />} />
+
         </Route>
         <Route element={<OnlyAdminPrivateRoutes />}>
           <Route path="/create-post" element={<CreatePost />} />

@@ -5,10 +5,6 @@ require('dotenv').config();
 // Initialize MongoDB Connection
 require('./DB/connection')
 
- 
-
-
-
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 
@@ -42,6 +38,7 @@ app.use(basepath+ '/api/auth' , require('./Routes/authRoutes'))
 app.use(basepath+ '/api/user' , require('./Routes/userRoutes'))
 app.use(basepath+ '/api/post' , require('./Routes/postRoutes'))
 app.use(basepath+ '/api/comment' , require('./Routes/commentRoutes'))
+// app.use(basepath+ '/api/c\' , require('./Routes/commentRoutes'))
 
 
 

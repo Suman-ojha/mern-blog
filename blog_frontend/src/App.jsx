@@ -35,7 +35,6 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/dashboard" element={<Dashboard />} />
-
         </Route>
         <Route element={<OnlyAdminPrivateRoutes />}>
           <Route path="/create-post" element={<CreatePost />} />

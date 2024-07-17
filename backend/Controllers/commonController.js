@@ -43,12 +43,13 @@ module.exports = {
                 port: SMTPPORT
             };
             let subject = "Reset Password";
-            
+
             let msg_body = `<h1>Reset Your Password</h1>
             <p>Click on the following link to reset your password:</p>
             <a href="${APP_URL}/reset-password/${token}">${APP_URL}/reset-password/${token}</a>
             <p>The link will expire in 10 minutes.</p>
             <p>If you didn't request a password reset, please ignore this email.</p>`;
+            
             // let msg_body =`${APP_URL}/reset-password/${token}`;
             // console.log(user_details?.email)
             let sendemail_resetToken = await EmailHelper.send_email(smtp_data, user_details?.email, subject, msg_body);
@@ -122,4 +123,5 @@ module.exports = {
             })
         }
     },
+    
 }

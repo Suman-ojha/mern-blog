@@ -66,7 +66,7 @@ module.exports = {
                 })
             }
             //which user made that comment & admin can edit that .
-            if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
+            if (comment.userId !== req.authId) {
                 return resp.status(403).send({
                     status: 'error',
                     message: 'You are not allowed to edit this comment'
@@ -106,16 +106,17 @@ module.exports = {
                 })
             }
             const comment = await Comment.findById(req.body.comment_id);
-            if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
-                return resp.status(403).send({
-                    status: 'error',
-                    message: 'You are not allowed to delete this comment'
+            if ((comment.userId === req.authId) || req.authData.isAdmin) {
+                await Comment.findByIdAndDelete({_id: new mongoose.Types.ObjectId(req.body.comment_id)});
+                return resp.status(200).send({
+                    status:'success',
+                    message :'comment deleted successfully!'
                 })
             }
-            await Comment.findByIdAndDelete({_id: new mongoose.Types.ObjectId(req.body.comment_id)});
-            return resp.status(200).send({
-                status:'success',
-                message :'comment deleted successfully!'
+           
+            return resp.status(403).send({
+                status: 'error',
+                message: 'You are not allowed to delete this comment'
             })
         } catch (e) {
             console.log(e)
@@ -146,10 +147,10 @@ module.exports = {
             }
             // if(comment.likedUsers.includes(doc.userId)){
             // console.log(doc , "<<comment");
-            if ((comment.userId !== req.authId) && !req.authData.isAdmin) {
+            if (!req.authId) {
                 return resp.status(403).send({
                     status: 'error',
-                    message: 'You are not allowed to delete this comment'
+                    message: 'You are not allowed'
                 })
             }
             if (!comment) {

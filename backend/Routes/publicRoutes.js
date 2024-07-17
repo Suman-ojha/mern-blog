@@ -7,4 +7,5 @@ router.post("/forget-password", commonController.forgetPassword);
 router.post("/reset-password", commonController.resetPassword);
 
 
+
 module.exports = router;

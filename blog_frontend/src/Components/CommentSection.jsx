@@ -98,7 +98,11 @@ const CommentSection = ({ postId }) => {
                 setComments(comments.filter((comment)=> comment._id!==comment_id))
                 setShowModal(false);
             }
+            if(data.status==='error'){
+                toast.error(data.message)
+            }
         } catch (e) {
+            toast.error(data.message)
             console.log(e.message)
         }
     }

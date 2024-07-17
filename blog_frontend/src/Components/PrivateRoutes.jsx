@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Outlet, Navigate } from 'react-router-dom';
 import { isTokenExpired } from '../utils/isTokenExpired'
 import { signoutSuccess } from '../redux/user/userSlice';
+import { useEffect } from 'react';
 
 const PrivateRoutes = () => {
     const dispatch = useDispatch();

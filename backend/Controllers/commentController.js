@@ -66,7 +66,8 @@ module.exports = {
                 })
             }
             //which user made that comment & admin can edit that .
-            if (comment.userId !== req.authId) {
+    
+            if (comment.userId.toString() !==  req.authId.toString()) {
                 return resp.status(403).send({
                     status: 'error',
                     message: 'You are not allowed to edit this comment'
@@ -106,7 +107,7 @@ module.exports = {
                 })
             }
             const comment = await Comment.findById(req.body.comment_id);
-            if ((comment.userId === req.authId) || req.authData.isAdmin) {
+            if ((comment.userId.toString() === req.authId.toString()) || req.authData.isAdmin) {
                 await Comment.findByIdAndDelete({_id: new mongoose.Types.ObjectId(req.body.comment_id)});
                 return resp.status(200).send({
                     status:'success',

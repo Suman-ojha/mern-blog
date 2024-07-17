@@ -74,6 +74,10 @@ const DashComments = () => {
         )
         setShowModal(false);
       }
+      if (data.status === 'error') {
+        setShowModal(false);
+        toast.error(data.message)
+      }
     } catch (e) {
       toast.error(e.message)
     }
@@ -94,7 +98,7 @@ const DashComments = () => {
       if (res.ok) {
         const data = await res.json();
         // console.log((data.data ,'jk'));
-        setComments((prev)=>[...prev , ...data.comments]);
+        setComments((prev) => [...prev, ...data.comments]);
         if (data.comments.length < 9) {
           setShowMore(false);
         }

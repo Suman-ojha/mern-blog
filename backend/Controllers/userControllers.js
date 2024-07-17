@@ -33,7 +33,7 @@ module.exports = {
                 createdAt: { $gte: oneMonthAgo },
             });
             return resp.status(200).send({
-                status :'success',
+                status: 'success',
                 users: usersWithoutPassword,
                 total_user_count: totalUsers,
                 last_month_user_count: lastMonthUsers,
@@ -100,11 +100,11 @@ module.exports = {
             if (req.body.profilepic) {
                 doc.profilepic = req.body.profilepic
             }
-            if (req.body.password ){
-                if(req.body.password.length >= 8 || req.body.password.length < 20){
+            if (req.body.password) {
+                if (req.body.password.length >= 8 || req.body.password.length < 20) {
 
                     doc.password = await bcrypt.hash(req.body.password, 10);
-                }else{
+                } else {
 
                     return resp.status(400).send({
                         status: 'error',
@@ -112,10 +112,10 @@ module.exports = {
                     })
                 }
             }
-              
-            
+
+
             const data = await User.findOneAndUpdate(
-                {_id : new mongoose.Types.ObjectId(req.body.id)},
+                { _id: new mongoose.Types.ObjectId(req.body.id) },
                 { $set: doc },
                 { new: true }
             ).select('-password');
@@ -124,9 +124,9 @@ module.exports = {
             return resp.status(200).send({
                 status: 'success',
                 message: 'User details updated successfully.',
-                user_data:data
+                user_data: data
             })
-           
+
         } catch (e) {
             return resp.status(500).send({
                 status: 'error',
@@ -147,8 +147,8 @@ module.exports = {
                     error: v.errors
                 })
             }
-            const data = await User.findOne({_id : new mongoose.Types.ObjectId(req.body.id)})
-            if ((!req.authData.isAdmin && req.authId !== req.body.id) || data.isAdmin) {
+            const data = await User.findOne({ _id: new mongoose.Types.ObjectId(req.body.id) })
+            if ((!req.authData.isAdmin && req.authId.toString() !== req.body.id.toString()) || data.isAdmin) {
                 return resp.status(404).send({
                     status: 'error',
                     message: 'you are not authorized to delete this user'

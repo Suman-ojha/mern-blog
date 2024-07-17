@@ -135,7 +135,7 @@ const Comment = ({ comment, onLike, onEdit, onDelete }) => {
                     (comment.numberOfLikes === 1 ? 'like' : 'likes')}
                 </p>
                 {currentUser &&
-                  (currentUser.user_data._id === comment.userId || currentUser.user_data.isAdmin) && (
+                  (currentUser.user_data._id.toString() === comment.userId.toString() || currentUser.user_data.isAdmin) && (
                     <>
                       <button
                         type='button'

@@ -44,7 +44,7 @@ module.exports = {
             };
             let subject = "Reset Password";
 
-            let msg_body = `<h1>Reset Your Password</h1>
+            let msg_body = `<h3>Reset Your Password</h3>
             <p>Click on the following link to reset your password:</p>
             <a href="${APP_URL}/reset-password/${token}">${APP_URL}/reset-password/${token}</a>
             <p>The link will expire in 10 minutes.</p>

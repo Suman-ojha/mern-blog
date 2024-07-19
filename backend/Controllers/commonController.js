@@ -6,6 +6,7 @@ const { Validator } = require('node-input-validator');
 const bcrypt = require('bcryptjs');
 const site_helpers = require('../helpers/site_helpers');
 const EmailHelper = require('../helpers/email_helper')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 module.exports = {
     forgetPassword: async function (req, resp, next) {
         try {
@@ -49,7 +50,7 @@ module.exports = {
             <a href="${APP_URL}/reset-password/${token}">${APP_URL}/reset-password/${token}</a>
             <p>The link will expire in 10 minutes.</p>
             <p>If you didn't request a password reset, please ignore this email.</p>`;
-            
+
             // let msg_body =`${APP_URL}/reset-password/${token}`;
             // console.log(user_details?.email)
             let sendemail_resetToken = await EmailHelper.send_email(smtp_data, user_details?.email, subject, msg_body);
@@ -123,5 +124,42 @@ module.exports = {
             })
         }
     },
-    
+    create_stripe_payment_checkout_session: async function (req, resp, next) {
+        try {
+            const { product } = req.body;
+            // console.log(product,'pri')
+            const lineItems = {
+                price_data: {
+                    currency: "inr",
+                    product_data: {
+                        name: product.title,
+                    },
+                    unit_amount: product.price * 100,
+                },
+                quantity: 1,
+            };
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: [lineItems],
+                phone_number_collection: {
+                    enabled: true,
+                },
+                mode: 'payment',
+                allow_promotion_codes: true,
+                success_url: `${APP_URL}/success`,
+                cancel_url: `${APP_URL}/cancel`,
+            });
+            // console.log(session, "sessoin")
+            return resp.send({ id: session.id, message: 'payment session id created.' });
+        } catch (error) {
+            // console.log(error, "<<err");
+            return resp.status(500).send({
+                status: 'error',
+                message: error?.message ?? 'something went wrong.'
+            })
+        }
+    },
+  
+
+
 }

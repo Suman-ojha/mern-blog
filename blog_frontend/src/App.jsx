@@ -17,6 +17,9 @@ import ScrollToTop from './Components/ScrollToTop'
 import Search from './pages/Search'
 import ResetPassword from './pages/ResetPassword'
 import ForgotPassword from './pages/ForgotPassword'
+import PaymentError from './Components/PaymentError'
+import PaymentSuccess from './Components/PaymentSuccess'
+import PageNotFound from './pages/404'
 
 
 const App = () => {
@@ -31,6 +34,8 @@ const App = () => {
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path='/search' element={<Search />} />
+        <Route path='/success' element= {<PaymentSuccess/>} />
+        <Route path='/cancel' element={<PaymentError />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route element={<PrivateRoutes />}>
@@ -42,6 +47,7 @@ const App = () => {
         </Route>
         <Route path="/projects" element={<Projects />} />
         <Route path='/post/:postSlug' element={<PostPage />} />
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
       <FooterComp />
     </BrowserRouter>

@@ -127,7 +127,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col  items-center mb-5">
         <h1 className='text-xl mt-5 font-semibold'>Subscription</h1>
-        <div className="mt-5 flex flex-wrap gap-5 justify-center md:flex-nowrap">
+        <div className="m-4 flex flex-wrap gap-5 justify-around md:flex-nowrap">
           {
             subscribe_data && subscribe_data.map((item, idx) => <SubscriptionCards key={idx} data={item} />)
           }
@@ -135,7 +135,7 @@ const Home = () => {
       </div>
       <div className='flex flex-col  items-center mb-5'>
         <h1 className='text-xl mt-5 font-semibold'>Recent Posts</h1>
-        <div className='flex flex-wrap gap-5 mt-5 justify-center'>
+        <div className='flex flex-wrap gap-5 m-4 justify-center'>
           {posts &&
             posts.map((post) => <PostCard key={post._id} post={post} />)}
         </div>

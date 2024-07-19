@@ -31,6 +31,9 @@ global.SMTPPORT = process.env.SMTPPORT;
 
 //app url
 global.APP_URL = process.env.APP_URL;
+//stripe secret key
+global.STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+
 
 
 //register the routes
